@@ -18,7 +18,7 @@ lapply(want, require, character.only = TRUE) # Now load them all
 #----------------------------------------------
 # 1.prepare all functions we need
 #----------------------------------------------
-script_files <- list.files(path= 'script_utils', full.names = TRUE) 
+script_files <- list.files(path= 'script_utils_R', full.names = TRUE) 
                                               # get a list of all script files in the folder
 lapply(script_files, source)                  # Source each script file
 

@@ -12,7 +12,7 @@ for is = 1:length(DATA.beh)
 end
 
 % 2) rdm
-Trdm  = array2table(DATA.rdm.mat,'VariableNames', DATA.rdm.names);
+%Trdm  = array2table(DATA.rdm.mat,'VariableNames', DATA.rdm.names);
 
 % 3) descriptive results from DM part;
 Tdesc = array2table(DATA.desc.mat, 'VariableNames',DATA.desc.names);
@@ -21,7 +21,8 @@ Tdesc = array2table(DATA.desc.mat, 'VariableNames',DATA.desc.names);
 Tglm  = array2table(DATA.cglm.mat,'VariableNames', DATA.cglm.names);
 
 % 5) temp
-%Ttemp  = array2table(DATA.temp.mat,'VariableNames', DATA.temp.names);
+Ttemp  = array2table(DATA.tempglm.mat,'VariableNames', DATA.tempglm.names);
+Ttemp_splitRT  = array2table(DATA.split_temp.mat,'VariableNames', DATA.split_temp.names);
 
 % 6) questionnaire summary scores
 Qmat = [];
@@ -38,7 +39,7 @@ Tq = array2table(Qmat,'VariableNames', DATA.beh{1}.qns.names); % note that the {
  Tcomments= cell2table(Workercomments);
 
 % Make tables for all the stuff you want, and save: 
-T = [Tid, Trdm, Tdesc, Tglm, Tq, Tcomments];  %Ttemp, 
+T = [Tid, Tdesc, Tglm, Ttemp, Ttemp_splitRT, Tq, Tcomments]; %Trdm, 
 
 writetable(T,fname); 
 

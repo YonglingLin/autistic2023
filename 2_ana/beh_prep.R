@@ -20,9 +20,13 @@ save_dated_csv <- function(data, prefix, out_dir = datapath) {
 }
 
 # Read experiment-level source tables.
+#Lab         <- read.csv(file.path(rawdatapath, "Lab_FULLTABLE_29-Jul-2021_ridgeALL.csv"), header=TRUE, sep=",")
+#Online1_2   <- read.csv(file.path(rawdatapath, 'Online1_Online2_standard_07-Sep-2023_ridgeALL.csv'), header=TRUE, sep=',')
+#Online3     <- read.csv(file.path(rawdatapath, 'Online3_standard_07-Sep-2023_ridgeALL.csv'), header=TRUE, sep=',')
+
 Lab         <- read.csv(file.path(rawdatapath, "Lab_FULLTABLE_29-Jul-2021_ridgeALL.csv"), header=TRUE, sep=",")
-Online1_2   <- read.csv(file.path(rawdatapath, 'Online1_Online2_standard_07-Sep-2023_ridgeALL.csv'), header=TRUE, sep=',')
-Online3     <- read.csv(file.path(rawdatapath, 'Online3_standard_07-Sep-2023_ridgeALL.csv'), header=TRUE, sep=',')
+Online1_2   <- read.csv(file.path(rawdatapath, 'Online1_Online2_standard_07-Nov-2026_ridgeALL.csv'), header=TRUE, sep=',')
+Online3     <- read.csv(file.path(rawdatapath, 'Online3_standard_07-Nov-2026_ridgeALL.csv'), header=TRUE, sep=',')
 
 #-----------------------------------------------------------------------------
 # Define four versions: Lab; Online1; Online2; Online3
