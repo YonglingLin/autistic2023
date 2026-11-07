@@ -2,9 +2,7 @@
 # Main behavior plotting script
 # Purpose:
 # 1) Load and merge behavioral datasets across experiment versions.
-# 2) Compute summary indices (e.g., self-bias and SBF-related metrics).
-# 3) Export analysis-ready tables with date-stamped filenames.
-# 4) Generate publication figures (Fig3-Fig6) as PDF files.
+# 2) Generate publication figures (Fig3-Fig6) as PDF files.
 # -----------------------------------------------------------------------------
 
 # Clear existing objects and set working directory to this script's location.
@@ -15,49 +13,25 @@ setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 source('environPrepar.R')
 
 # Input/output folders used throughout the script.
-rawdatapath = '../1_data/outfrommat'
+rawdata = '../1_data/outfrommat'
 datapath='../3_ana_out'
 path_figs='../5_figs'
 today_tag <- format(Sys.Date(), "%Y%m%d")
+############################################################################################
+# Get the experiment-level csv files from 3_ana_out folder
+############################################################################################
+Fulldata <- read.csv(file.path(datapath,'Fulldata_20261020.csv'), header =TRUE,sep=',')
+online1 <- read.csv(file.path(datapath,'online1_20261020.csv'), header =TRUE,sep=',')
+online2 <- read.csv(file.path(datapath,'online2_20261020.csv'), header =TRUE,sep=',')
+online3 <- read.csv(file.path(datapath,'online3_20261020.csv'), header =TRUE,sep=',')
+lab     <- read.csv(file.path(datapath,'lab_20261020.csv'), header =TRUE,sep=',') 
 
-# Small helper to keep CSV export naming consistent.
-save_dated_csv <- function(data, prefix, out_dir = datapath) {
-  out_file <- file.path(out_dir, paste0(prefix, "_", today_tag, ".csv"))
-  write.csv(data, file = out_file, row.names = FALSE)
-}
-
-# Read experiment-level source tables.
-Lab         <- read.csv(file.path(rawdatapath, "Lab_FULLTABLE_29-Jul-2021_ridgeALL.csv"), header=TRUE, sep=",")
-Online1_2   <- read.csv(file.path(rawdatapath, 'Online1_Online2_standard_07-Sep-2023_ridgeALL.csv'), header=TRUE, sep=',')
-Online3     <- read.csv(file.path(rawdatapath, 'Online3_standard_07-Sep-2023_ridgeALL.csv'), header=TRUE, sep=',')
-
-#-----------------------------------------------------------------------------
-# Define four versions: Lab; Online1; Online2; Online3
-#-----------------------------------------------------------------------------
-
-Lab$ver <- c('lab')
-Online1_2$ver <- ifelse(Online1_2$groupver==0,'online2','online1')
-Online3$ver <- c('online3')
-
-#- Create a full dataset;
-# Build the full participant-level table and derive analysis variables.
-Fulldata <- setFull(Lab, Online1_2, Online3)
-Fulldata <- addBehIndex(Fulldata)
-Fulldata$mode <- ifelse(Fulldata$ver=='lab','lab','online')
-Fulldata$AQcutoff <- ifelse(Fulldata$AQbinary_total>=32,'aboveAQcutoff','belowAQcutoff')
-
-file_name <- paste(datapath,"/Fulldata_", format(Sys.Date(), "%Y%m%d"), ".csv", sep = "")
-save_dated_csv(Fulldata, "Fulldata")
 
 
 #----------------------------------------------------------------------------------------------
 # Fig.3: %corr+GLM, Self-bias, SBF use in self and partner decisions for Online experiment 1
 #----------------------------------------------------------------------------------------------
-online1 <- subset(Fulldata, ver=='online1')
-save_dated_csv(online1, "online1")
-
 # 3a: Percent correct (%corr) for self vs partner choices.
-
 VOI <- c('corS','corP') 
 X <- online1 %>% pivot_longer(cols = VOI, names_to = 'type', values_to = 'scores') %>% mutate(type = factor(type, levels = VOI))
 corplot <- ggplot(X, aes(x = type, y = scores, fill = type)) +
@@ -68,7 +42,6 @@ corplot <- ggplot(X, aes(x = type, y = scores, fill = type)) +
   scale_fill_manual(values = color_palette[c(1:2)]) + scale_x_discrete(labels = c("Self", "Partner")) +
   theme_pubr(base_size = 24) + xlab("") + ylab("Percentage of correct \n choice (%corr)")
 corplot
-
 
 # 3b: Self-bias index in online1.
 VOI <- c('corSP') 
@@ -135,22 +108,12 @@ Psomplot
 Main_fig3 = ggarrange(corplot,sbiasplot,SGLMplot,Ssomplot,PGLMplot,Psomplot,ncol=2,nrow=3, heights=c(2,2), widths = c(1.3,1), labels=c('A','B','C','D','E','F'), 
                       vjust=2, hjust=-0.3, align='hv',font.label = list(size = 36, color = "black", face = "bold"))
 
-ggsave(file.path(path_figs, paste0('Fig3ABCDEF_',Sys.Date(),'.pdf')),plot=Main_fig2,dpi = 300, device = "pdf",height=20,width=14) 
+ggsave(file.path(path_figs, paste0('Fig3ABCDEF_',Sys.Date(),'.pdf')),plot=Main_fig3,dpi = 300, device = "pdf",height=20,width=14) 
 
 
 #-----------------------------------------------------------------------------
 # Fig.4: Compare behavioural markers across experiments
 #-----------------------------------------------------------------------------
-online2 <- subset(Fulldata, ver=='online2')
-save_dated_csv(online2, "online2")
-
-online3 <- subset(Fulldata, ver=='online3')
-save_dated_csv(online3, "online3")
-
-lab <- subset(Fulldata, ver=='lab')
-save_dated_csv(lab, "lab")
-
-
 # 4a: %corr between self and partner decisions in all experiments
 VOI <- c('corS','corP') 
 X <- Fulldata %>% pivot_longer(cols = VOI, names_to = 'input', values_to = 'Values')
@@ -192,8 +155,7 @@ SelfBias_ver4_bar <- Fulldata %>%
   ggbarplot(x = "ver", y = "corSP", position = position_dodge(0.8), add = c("mean_se"), width = 1,
             fill = 'ver', color = c('gray'), linewidth = 1,
             add.params = list(color = 'black', alpha = 1, size = 1.6, width = 0.25),
-            ylab = c('Self-bias'), xlab = "") +
-  theme_pubr(base_size = 24) +
+            ylab = c('Self-bias'), xlab = "") + theme_pubr(base_size = 24) +
   scale_fill_manual(values = color_palette[c(3,1,5,7)]) +
   theme(plot.title = element_text(hjust = 0.5), legend.position = "none") +
   scale_x_discrete(labels = c("Online2\n(0%)",'Online1\n(33%)','Online3\n(50%)','Lab\n(33%)'))
@@ -317,9 +279,7 @@ doCorPlot <- function(data, Xvar, Yvar, colx, curylab, xlim_range = c(60, 200)) 
     theme_pubr(base_size=24) + #stat_cor(aes(color=type),size=11) + #method = 'kendall'
     scale_fill_manual(values = colx) + theme(legend.position = "none") +
     coord_cartesian(xlim = xlim_range, ylim = fig5_y_limits[[Yvar]])
-  
   return(p)
-  
 }
 
 online1_corSP <- doCorPlot(online1, Xvar, c('corSP'), extBlue[5], 'Self-bias', xlim_range = c(60, 200))
@@ -347,7 +307,6 @@ lab_Psom  <- doCorPlot(lab, Xvar, c('SBF_partner'), color_palette[c(8)], 'SBF us
 Main_fig5 = ggarrange(online1_corSP,online2_corSP,online3_corSP,lab_corSP,online1_Ssom,online2_Ssom,online3_Ssom,lab_Ssom,online1_Psom,online2_Psom,online3_Psom,lab_Psom,
                       ncol=4,nrow=3, heights=c(2,2), widths = c(1,1), labels=c('A','B','C','D','E','F','G','H','I','J','K','L'), vjust=2, hjust=0, align='hv',font.label = list(size = 36, color = "black", face = "bold"))
 ggsave(file.path(path_figs,paste0('Fig5_A-L_',Sys.Date(),'.pdf')),plot=Main_fig5,dpi = 300, device = "pdf",height=18,width=28)
-
 
 
 #-------------------------------------------------------------------------------------------
@@ -379,19 +338,9 @@ save_corrplot <- function(filename, mat, width = 8, height = 10, ...) {
   # Ensure no stale graphics devices interfere with PDF output.
   while (!is.null(dev.list())) dev.off()
   pdf(filename, width = width, height = height)
-  corrplot(mat,
-           method = 'color',
-           col = COL2("RdBu", n = 100),
-           addCoef.col = 'black',
-           number.cex = 1.5,
-           number.font = 2,
-           tl.col = "black",
-           tl.cex = 1.2,
-           tl.srt = 90,
-           cl.cex = 1.3,
-           cl.ratio = 0.35,
-           cl.length = 5,
-           addgrid.col = 'black')
+  corrplot(mat,method = 'color',col = COL2("RdBu", n = 100),addCoef.col = 'black', number.cex = 1.5,
+           number.font = 2, tl.col = "black", tl.cex = 1.2, tl.srt = 90, cl.cex = 1.3, cl.ratio = 0.35,
+           cl.length = 5, addgrid.col = 'black')
   dev.off()
 }
 

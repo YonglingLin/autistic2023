@@ -13,7 +13,7 @@ setFull <- function(ridge_lab_data, s1GS, s2BT){
   
    # 2) Keep the variable names consistent: 
         # NOTED:have changed ridge_lab_data.csv before import to R
-  
+
   VOI <- c('LA_total', 'RSS_total', 'SRP_total', 'SRP_interpersonal', 'SRP_affective', 'SRP_liftstyle', 'SRP_affec_interp', 'SRP_lifesty_antis',
            'SRP_antisocial',  'QCAE_total', 'QCAE_perspective','QCAE_Simulation', 'QCAE_Emotional_Contagion',
            'QCAE_Peripheral_Response', 'QCAE_Proximal_Response', 'QCAE_Cog_Empathy','QCAE_Emotion_Empathy','AQ_total', 'AQ_Social_Skills',
@@ -22,11 +22,9 @@ setFull <- function(ridge_lab_data, s1GS, s2BT){
            'corS','corP','rtS','rtP','Sglm.c','Sglm.S','Sglm.P','Sglm.Or','Sglm.Oi','Sglm.bonus',
            'Pglm.c','Pglm.S','Pglm.P','Pglm.Or','Pglm.Oi','Pglm.bonus','ver','AQbinary_total','AQbinary_Social_Skills','AQbinary_Att_Switch',
            'AQbinary_Att_Detail','AQbinary_Communication','AQbinary_Imagination','AQbinary_3FM_Social_Skills','AQbinary_3FM_Detail',
-           'AQbinary_3FM_Communication','AQbinary_2FM_Social_Comm')
-  # 'Stemp.c', 'Stemp.groupdri','Stemp.individri','Stemp.bonus',
-  # 'Ptemp.c','Ptemp.groupdri','Ptemp.individri','Ptemp.bonus',
+           'AQbinary_3FM_Communication','AQbinary_2FM_Social_Comm', 'fast.Sglm.pcodexF','fast.Sglm.scodexF','fast.Sglm.bonus','slow.Sglm.pcodexF',
+           'slow.Sglm.scodexF','slow.Sglm.bonus','fast.Pglm.pcodexF','fast.Pglm.scodexF','fast.Pglm.bonus','slow.Pglm.pcodexF','slow.Pglm.scodexF','slow.Pglm.bonus')
   
-
 variable_to_add <- VOI
 
 # CHECK IF variables exist and add them if they don't in ridge_lab_data

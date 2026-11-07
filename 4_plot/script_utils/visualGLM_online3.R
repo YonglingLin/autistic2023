@@ -52,14 +52,16 @@ visualGLM_online3 <- function(ongoingDATA, ttl, cols) {
   Fig_SBF <- plotGLM_coefficients(RegFig_SBF, cols)
 
   
+  Reg_stats <-rbind(corSP,SBF_self,SBF_partner)
+  print(Reg_stats)
+  
   # c) stack both panels: self-bias (upper), SBF (lower)
   # -------------------------------------------------------------------------------------
   ggpubr::ggarrange(Fig_selfbias, Fig_SBF, ncol = 1, nrow = 2, labels = c('B', 'C'),
                     align = 'hv', font.label = list(size = 36, color = "black", face = "bold"))
   
+
   
-  Reg_stats <-rbind(corSP,SBF_self,SBF_partner)
-  print(Reg_stats)
 }
 
 

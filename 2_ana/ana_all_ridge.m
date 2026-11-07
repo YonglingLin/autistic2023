@@ -23,16 +23,14 @@ outdata2 = ['../1_data' filesep];
 
 
 % 2) load the pre-analysed data
-load('../1_data/Alldata_4exps_ridge_07-Nov-2026.mat')
+load('../1_data/Alldata_4exps_ridge_07-Sep-2023.mat')
 
 % 3) export data based on different experiments 
 
-% 3a) save lab-data: S0 in different pieces
+% 3a) save lab-data: S0 in different pieces: %FULLTABLE included questionnaire data is provided for the lab data in the github repo.
 exportCsv([outdata 'Lab_standard_' date '_ridgeALL'], S0.cglm.mat, S0.cglm.names(1:12))
 exportCsv([outdata 'Lab_tempglm_' date '_ridgeALL'], S0.tempglm.mat, S0.tempglm.names(:))
 exportCsv([outdata 'Lab_temp_splitRT_' date '_ridgeALL'], S0.split_temp.mat, S0.split_temp.names(:))
-%FULLTABLE is provided for the lab data in the github repo.
-
 
 % 3b) save S1GS - online 1 and online 2
 S1GS.s.cglm = S1GS.cglm;

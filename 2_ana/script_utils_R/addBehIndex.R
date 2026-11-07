@@ -14,6 +14,8 @@ addBehIndex <- function(Datset){
   Datset$SBF_partner <- Datset$Pglm.S - Datset$Pglm.Oi
   Datset$meanSBF     <- (Datset$SBF_self +Datset$SBF_partner)/2
   
+  Datset$alternative_SBF_self <- Datset$fast.Sglm.pcodexF - Datset$fast.Sglm.scodexF
+  Datset$alternative_SBF_partner <- Datset$fast.Pglm.pcodexF - Datset$fast.Pglm.scodexF
   
   return(Datset)
  

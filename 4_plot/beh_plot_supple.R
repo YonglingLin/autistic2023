@@ -50,6 +50,7 @@ figS1B <- Fulldata %>%
           scale_fill_manual(values = color_palette[c(1,3,5,7)])+ scale_x_discrete(labels = c("Online1",'Online2','Online3','lab'))  + theme(legend.position = "none")
 
 # Fig.S1C: plot Bayes factors supporting the null in the correlation between autistic traits and self-bias in RT
+# notes: Bayes factors have been pre-computed using JASP (see "3_ana_out/stats")
 
 bayf01  <- read.csv(file.path(datapath,'bayerFactor_supple.csv'), header=TRUE, sep=',')
 
@@ -61,7 +62,7 @@ figS1C <- ggbarplot(bayf01,'ExpVer','BF01_rtSP',fill = 'ExpVer', ylab = 'Evidenc
 supple_fig1 = ggarrange(figS1A,figS1B, figS1C, ncol=3,nrow=1, heights=c(2,2), widths = c(1.2,1,1), labels=c('A','B','C'), 
                         vjust=2, hjust=-0.3, align='hv',font.label = list(size = 36, color = "black", face = "bold"))
 
-ggsave(file.path(path_figs, paste0('SFig1ABC_',Sys.Date(),'.pdf')),plot=supple_fig1,dpi = 300, device = "pdf",height=10,width=24) 
+ggsave(file.path(path_figs, paste0('SFig1ABC_',Sys.Date(),'.pdf')),plot=supple_fig1,dpi = 300, device = "pdf",height=10,width=28) 
 
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-
@@ -109,11 +110,14 @@ ggsave(file.path(path_figs, paste0('SFig2AB_',Sys.Date(),'.pdf')),plot=supple_fi
 #----------------------------------------------------------------------------------------------------------------------------------
 # supplementary Figure S3: prim-sec basis function use with autistic trait scores
 #----------------------------------------------------------------------------------------------------------------------------------
-lab_prim_sec       <- read.csv(file.path(rawdata, "Lab_prim_sec_splitRT_20-Apr-2026_ridgeALL.csv"), header=TRUE, sep=",")
-names(lab_prim_sec)[1] <- as.character('subject_id')
+lab_prim_sec_raw       <- read.csv(file.path(rawdata, "Lab_FULLTABLE_29-Jul-2021_ridgeALL.csv"), header=TRUE, sep=",")
+names(lab_prim_sec_raw)[1] <- as.character('subject_id')
 
-online1_2_prim_sec <- read.csv(file.path(rawdata,'Online1_Online2_prim_sec_splitRT_20-Apr-2026_ridgeALL.csv'), header=TRUE, sep=',')
-online3_prim_sec   <- read.csv(file.path(rawdata,'Online3_prim_sec_splitRT_20-Apr-2026_ridgeALL.csv'), header = TRUE,sep = ',')
+lab_prim_sec <- lab_prim_sec_raw[,c('subject_id','AQ_total','fast.Sglm.pcodexF','fast.Sglm.scodexF','slow.Sglm.pcodexF','slow.Sglm.scodexF',
+                                    'fast.Pglm.pcodexF','fast.Pglm.scodexF','slow.Pglm.pcodexF','slow.Pglm.scodexF')]
+
+online1_2_prim_sec <- read.csv(file.path(rawdata,'Online1_Online2_standard_07-Nov-2026_ridgeALL.csv'), header=TRUE, sep=',')
+online3_prim_sec   <- read.csv(file.path(rawdata,'Online3_standard_07-Nov-2026_ridgeALL.csv'), header = TRUE,sep = ',')
 
 online1_raw  = subset(online1_2_prim_sec, groupver == 1)
 online1_prim_sec <- online1_raw[,c('subject_id','AQ_total','fast.Sglm.pcodexF','fast.Sglm.scodexF','slow.Sglm.pcodexF','slow.Sglm.scodexF',
@@ -156,6 +160,8 @@ lab_temp_P     <- plot_boxplot(lab_prim_sec,ttype_filter = 'P', title_label = ''
 
 
 bayf01  <- read.csv(file.path(datapath,'bayerFactor_supple.csv'), header=TRUE, sep=',')
+# notes: Bayes factors have been pre-computed using JASP (see "3_ana_out/stats")
+
 bf_diffps_s <- ggbarplot(bayf01,'ExpVer','BF01_diff_pcodexF_scodexF_fast_S',fill = 'ExpVer', ylab = 'Evidence for null (BF01): \n autistic scores ~ SBF effect') + 
   scale_fill_manual(values = color_palette_paired[c(1,2,3,4)]) + xlab('') + ggtitle('Self decisions') + 
   geom_hline(yintercept=1,linetype='dashed', linewidth = 1)  + theme_pubr(base_size = 20) + theme(legend.position  = 'none')
@@ -218,9 +224,7 @@ doCorPlot <- function(data, Xvar, Yvar, colx, curylab, xlim_range = c(60, 200)) 
                conf.int = T,  alpha = 1,  shape = 21, fill = "type", size=3.8, color = 'black', stroke = 0.4, xlab='Autistic trait scores',ylab=curylab) + 
     theme_pubr(base_size=24) + stat_cor(method = 'kendall', aes(color='black'),size=11,r.accuracy = 0.001, p.accuracy = 0.001) +
     scale_fill_manual(values = colx) + theme(legend.position = "none") + coord_cartesian(xlim = xlim_range, ylim = Sfig5_y_limits[[Yvar]])
-  
   return(p)
-  
 }
 
 online1_corSP <- doCorPlot(online1, Xvar, c('corSP'), extBlue[5], 'Self-bias', xlim_range = c(60, 200))
@@ -602,9 +606,11 @@ AQ_lab_continuous_plot <- plot_lab_aq_behavior("Continuous")
 AQ_lab_binary_plot <- plot_lab_aq_behavior("Binary")
 AQ_lab_behavior_plot <- patchwork::wrap_plots( AQ_lab_continuous_plot, AQ_lab_binary_plot, ncol = 2, guides = "collect") &theme(legend.position = "right")
 print(AQ_lab_behavior_plot)
+
 ggsave(file.path(path_figs, paste0('SFig9_AB_',Sys.Date(),'.pdf')),plot=AQ_lab_behavior_plot,dpi = 300, device = "pdf",height=12,width=22)
 
-# Strongest |r| and smallest p per behavior and scoring method (Lab only).
+
+# check the strongest |r| and smallest p per behavior and scoring method (Lab only).
 AQ_extreme_correlations <- AQ_behavior_correlations %>%
   dplyr::filter(behavior %in% c("Self-bias", "SBF in partner")) %>%
   dplyr::group_by(behavior, scoring) %>%
@@ -638,6 +644,7 @@ Pmer.plot <- ggbarplot(Fulldata, "AQcutoff","SBF_partner", position=position_dod
 summary_data <- Fulldata %>%
   group_by(ver) %>% summarise(total = n(), above_count = sum(AQcutoff == 'aboveAQcutoff'),
                               percentage = round(100 * above_count / total, 1))
+print(summary_data)
 
 ## Fig.10D-F: behavioural marker, split by AQ cutoff in lab experiment
 #-----------------------------------------------------------------------------------------------------------------------
@@ -666,6 +673,7 @@ make_lab_AQ_raincloud <- function(outcome_name) {
     theme(legend.position = "none")
   plot
 }
+
 lab_selfbias <- make_lab_AQ_raincloud("corSP")
 lab_SBF_self <- make_lab_AQ_raincloud("SBF_self")
 lab_SBF_partner <- make_lab_AQ_raincloud("SBF_partner")
@@ -680,7 +688,6 @@ ggsave(file.path(path_figs, paste0('Sfig10_A_F_',Sys.Date(),'.pdf')),plot=Sfig10
 #----------------------------------------------------------------------------------------------------------
 # Supplementary Figure S11_B_E the relationship is not masked by other maerkers of individual differences
 #----------------------------------------------------------------------------------------------------------
-source('environPrepar.R')
 
 ### supplement Fig.S11BC: model specific on Online Experiment 3 (N> 800)
 #-----------------------------------------------------------------------------------
